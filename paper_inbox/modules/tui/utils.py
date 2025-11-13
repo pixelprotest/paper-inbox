@@ -86,8 +86,6 @@ def print_text(text: str, console: Console, color: str = "blue1", bold: bool = F
 
     console.print(text)
 
-
-
 def format_title_success_msgs(msg_A: str, 
                               msg_B: str, 
                               step_number: int = None, 

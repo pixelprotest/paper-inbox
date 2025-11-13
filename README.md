@@ -39,7 +39,7 @@ pip install paper-inbox
 
 Then run the interactive configuration with the `--config` flag
 
-<img alt="Config Demo" width="100%" style="border-radius:20px;" src="./.github/demo.gif">
+<img alt="Config Demo" width="100%" style="border-radius:20px;" src="https://raw.githubusercontent.com/pixelprotest/paper-inbox/main/.github/demo.gif">
 
 
 ## 🚀 Usage

@@ -2,10 +2,10 @@ from typing import Union
 from rich.console import Console
 from paper_inbox.modules.tui.utils import print_text
 from paper_inbox.modules.const import (CHECK, 
-                                           CROSS, 
-                                           INFO_INDENT, 
-                                           SEPARATOR, 
-                                           INFO_INDENT)
+                                       CROSS, 
+                                       INFO_INDENT, 
+                                       SEPARATOR, 
+                                       INFO_INDENT)
 
 class SubStepFeedback:
     def __init__(self, 

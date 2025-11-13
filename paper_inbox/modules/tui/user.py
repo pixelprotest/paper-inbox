@@ -3,8 +3,8 @@ from platformdirs import user_downloads_dir
 from paper_inbox.modules.tui import validators
 from paper_inbox.modules.tui.utils import clear_previous_lines
 from paper_inbox.modules.const import (INDENT, 
-                                           QMARK_PREFIX, 
-                                           INDENT_Q_NEWLINE)
+                                       QMARK_PREFIX, 
+                                       INDENT_Q_NEWLINE)
 
 
 def confirm(msg: str = "Do you want to proceed?", 

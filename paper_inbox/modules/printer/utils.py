@@ -1,9 +1,9 @@
 import time
 import logging
 from paper_inbox.modules import config
-from paper_inbox.modules.loggers import setup_logger
-from paper_inbox.modules.utils import is_on_home_network
 from paper_inbox.modules.printer import cups
+from paper_inbox.modules.utils import is_on_home_network
+from paper_inbox.modules.loggers import setup_logger
 
 logger = setup_logger('printer', logging.INFO, False)
 
