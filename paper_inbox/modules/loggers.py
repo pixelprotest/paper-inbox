@@ -1,7 +1,9 @@
-import os
 import logging
+import os
 from logging.handlers import RotatingFileHandler
+
 from paper_inbox.modules.config.paths import get_log_dir
+
 
 class PaddedFormatter(logging.Formatter):
     """

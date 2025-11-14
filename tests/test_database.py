@@ -1,22 +1,24 @@
 # tests/test_database.py
 """Tests for database module"""
-import pytest
-import tempfile
 import os
+import tempfile
 from datetime import datetime
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
+
+import pytest
+
+from paper_inbox.modules.database.sqlwrapper import SQLiteWrapper
 from paper_inbox.modules.database.utils import (
-    get_database_handle,
     does_database_exist,
     does_email_exist,
+    get_database_handle,
     get_email_from_db_by_id,
     get_unprinted_emails,
-    set_email_as_printed,
     set_all_emails_as_printed,
+    set_email_as_printed,
     update_email_attachments,
 )
-from paper_inbox.modules.database.sqlwrapper import SQLiteWrapper
 
 
 class TestDatabaseUtils:
@@ -187,14 +189,14 @@ class TestSQLiteWrapper:
     def db(self):
         """Create a temporary SQLite database"""
         with tempfile.NamedTemporaryFile(delete=False, suffix='.sqlite3') as f:
-            db_path = f.name
+            db_path = Path(f.name)
         
         db = SQLiteWrapper(db_path, debug=False)
         yield db
         
         # Cleanup
-        if os.path.exists(db_path):
-            os.unlink(db_path)
+        if db_path.exists():
+            db_path.unlink()
     
     def test_create_entity_type(self, db):
         """Test creating a new entity type"""

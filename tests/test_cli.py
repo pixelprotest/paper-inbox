@@ -1,9 +1,10 @@
 # tests/test_cli.py
 """Tests for CLI module"""
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 from click.testing import CliRunner
-from paper_inbox.cli import main, configure_app, run_tests
+
+from paper_inbox.cli import main, run_tests
 
 
 class TestCLI:

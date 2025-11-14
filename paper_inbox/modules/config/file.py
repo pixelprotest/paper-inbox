@@ -1,6 +1,8 @@
 import tomli
 import tomli_w
+
 from paper_inbox.modules.config.paths import get_config_filepath
+
 
 def init_config():
     # Define the default structure and values for your config

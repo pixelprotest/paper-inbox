@@ -1,13 +1,15 @@
 # tests/test_main.py
 """Tests for main application logic"""
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
+
 from paper_inbox.main import (
-    validate_dependencies,
-    validate_config,
-    validate_auth,
     check_emails,
     print_emails,
+    validate_auth,
+    validate_config,
+    validate_dependencies,
 )
 
 

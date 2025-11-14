@@ -1,18 +1,21 @@
-import click
-import time
 import logging
 import subprocess
+import time
+
+import click
 from rich.console import Console
+
 from paper_inbox.main import run_app
-from paper_inbox.modules.tui import render, user
 from paper_inbox.modules.const import GREEN, RED, SEPARATOR
-from paper_inbox.modules.utils import (print_config, 
-                                       print_dirs, 
-                                       list_cron_jobs, 
-                                       open_config_dir)
-from paper_inbox.modules.tui.utils import (clear_previous_lines, 
-                                           print_text)
 from paper_inbox.modules.loggers import setup_logger
+from paper_inbox.modules.tui import render, user
+from paper_inbox.modules.tui.utils import clear_previous_lines, print_text
+from paper_inbox.modules.utils import (
+    list_cron_jobs,
+    open_config_dir,
+    print_config,
+    print_dirs,
+)
 
 console = Console()
 

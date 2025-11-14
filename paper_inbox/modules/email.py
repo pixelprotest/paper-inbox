@@ -1,21 +1,23 @@
 from __future__ import annotations
-import os
+
 import email
 import imaplib
 import logging
+import os
 from datetime import datetime, timedelta
-from email.utils import parsedate_to_datetime
 from email.message import Message
+from email.utils import parsedate_to_datetime
+from typing import TYPE_CHECKING, List
+
 from paper_inbox.modules import config
-from paper_inbox.modules.utils import get_data_download_dir, retry_on_failure
+from paper_inbox.modules.auth.gmail import get_credentials
+from paper_inbox.modules.config.paths import get_refresh_token_filepath
+from paper_inbox.modules.database.utils import does_email_exist, get_email_from_db_by_id
 from paper_inbox.modules.loggers import setup_logger
 from paper_inbox.modules.printer import convert
-from paper_inbox.modules.auth.gmail import get_credentials
 from paper_inbox.modules.printer.generate import generate_email_pdf
-from paper_inbox.modules.config.paths import get_refresh_token_filepath
-from paper_inbox.modules.database.utils import (does_email_exist, 
-                                                get_email_from_db_by_id)
-from typing import TYPE_CHECKING, List
+from paper_inbox.modules.utils import get_data_download_dir, retry_on_failure
+
 if TYPE_CHECKING:
     from paper_inbox.modules.database.sqlwrapper import SQLiteWrapper
 
@@ -25,7 +27,7 @@ SCOPES = ['https://mail.google.com/']
 TOKEN_PATH = str(get_refresh_token_filepath())
 
 
-def download_attachments(msg: Message, email_id: str) -> list[str]:
+def download_attachments(msg: Message, email_id: int) -> list[str]:
     """
     Downloads attachments from an email.
     """
@@ -57,7 +59,7 @@ def download_attachments(msg: Message, email_id: str) -> list[str]:
 
     return attachments
 
-def download_email(email_id: str) -> str:
+def download_email(email_id: int) -> str:
     """
     email_id: the id of the email in the database.
     Returns the path to the HTML and text files.
@@ -65,12 +67,14 @@ def download_email(email_id: str) -> str:
     email_obj = get_email_from_db_by_id(email_id)
     email_dir = get_data_download_dir(email_id, ensure_exists=True)
     email_filepath = generate_email_pdf(email_obj, email_dir)
+    assert email_filepath is not None, "Email filepath is None"
+
     return email_filepath 
 
 @retry_on_failure()
 def fetch_latest_emails(only_unseen: bool = True,
                       mark_as_read: bool = False,
-                      days_limit: int = None,
+                      days_limit: int | None = None,
                       limit: int = 10
                       ) -> list[dict]:
     """
@@ -85,6 +89,8 @@ def fetch_latest_emails(only_unseen: bool = True,
     messages = []
     creds = get_credentials()
     auth_string = f"user={config.email_account}\1auth=Bearer {creds.token}\1\1"
+
+    assert config.email_server_url is not None, "Email server URL is None"
     
     with imaplib.IMAP4_SSL(config.email_server_url) as mailserver:
         mailserver.authenticate("XOAUTH2", lambda x: auth_string.encode("utf-8"))
@@ -93,7 +99,7 @@ def fetch_latest_emails(only_unseen: bool = True,
         search_criteria = format_search_criteria(only_unseen, days_limit, config.email_senders)
         logger.info(f"Search criteria: {search_criteria}")
         
-        result, data = mailserver.uid("search", None, search_criteria)
+        result, data = mailserver.uid("search", search_criteria) # mailserver.uid("search", None, search_criteria)
         if result != "OK":
             logger.error(f"Search failed with result: {result}")
             return []
@@ -126,8 +132,7 @@ def add_email_to_database(email: Message,
                           ) -> int:
     """ Adds an email to the database """
     create_dict = format_email_dict(email)
-    email_obj = db.create('Email', create_dict, return_entity=True)
-    email_id = email_obj.get('id')
+    email_id = db.create('Email', create_dict)
     return email_id
 
 ## -------------------------
@@ -152,19 +157,19 @@ def format_email_dict(email: Message) -> dict:
                 try:
                     body = part.get_payload(decode=True).decode('utf-8', errors='ignore')
                     break  # Use the first text/plain part
-                except:
+                except Exception as e:
                     pass
             # Fallback to text/html if no text/plain found
             elif content_type == "text/html" and not body:
                 try:
                     body = part.get_payload(decode=True).decode('utf-8', errors='ignore')
-                except:
+                except Exception as e:
                     pass
     else:
         # For non-multipart messages
         try:
             body = email.get_payload(decode=True).decode('utf-8', errors='ignore')
-        except:
+        except Exception as e:
             body = str(email.get_payload())
     
     return {
@@ -175,7 +180,7 @@ def format_email_dict(email: Message) -> dict:
     }
 
 def format_search_criteria(only_unseen: bool = True, 
-                           days_limit: int = None, 
+                           days_limit: int | None = None, 
                            from_emails: List[str] = []
                            ) -> str:
     """Formats the search criteria for the email server."""
@@ -216,8 +221,7 @@ def distill_email_ids(data: list[bytes], limit: int = 10, reverse: bool = True) 
         email_ids.reverse()
     return email_ids
 
-def get_email_uid(email: Message
-                  ) -> tuple[str, datetime]:
+def get_email_uid(email: Message) -> str:
     """ Distills the email UUID the email msg."""
     email_uid = email.get("Message-ID")
     if email_uid is None:

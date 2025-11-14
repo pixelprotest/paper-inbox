@@ -1,13 +1,13 @@
 # tests/test_utils.py
 """Tests for utils module"""
-import pytest
 import os
 import tempfile
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
+
 from paper_inbox.modules.utils import (
-    is_on_home_network,
-    get_data_download_dir,
     collect_files_to_print,
+    get_data_download_dir,
+    is_on_home_network,
     retry_on_failure,
 )
 

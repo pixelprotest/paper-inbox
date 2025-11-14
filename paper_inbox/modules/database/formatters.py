@@ -1,5 +1,6 @@
 import re
 
+
 def to_snake_case(name: str) -> str:
     """Converts a PascalCase or CamelCase string to snake_case."""
     s1 = re.sub(r'([A-Z]+)([A-Z][a-z])', r'\1_\2', name)

@@ -1,12 +1,16 @@
-import os
 import logging
-from google_auth_oauthlib.flow import InstalledAppFlow
+import os
+
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
-from paper_inbox.modules.utils import retry_on_failure
+from google_auth_oauthlib.flow import InstalledAppFlow
+
+from paper_inbox.modules.config.paths import (
+    get_refresh_token_filepath,
+    get_secrets_filepath,
+)
 from paper_inbox.modules.loggers import setup_logger
-from paper_inbox.modules.config.paths import (get_secrets_filepath, 
-                                              get_refresh_token_filepath)
+from paper_inbox.modules.utils import retry_on_failure
 
 logger = setup_logger('gmail', logging.INFO, silent_logging=True)
 
@@ -16,7 +20,7 @@ TOKEN_PATH = str(get_refresh_token_filepath())
 CLIENT_SECRETS_PATH = str(get_secrets_filepath())
 
 @retry_on_failure()
-def get_credentials() -> Credentials:
+def get_credentials() -> Credentials | None:
     """
     Loads and refreshes Google OAuth 2.0 credentials from token.json.
     """

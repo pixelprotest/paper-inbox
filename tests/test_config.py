@@ -1,22 +1,24 @@
 # tests/test_config.py
 """Tests for configuration module"""
-import pytest
 import tempfile
-import os
 from pathlib import Path
-from unittest.mock import patch, MagicMock
-from paper_inbox.modules.config import file, validators, getters
+from unittest.mock import mock_open, patch
+
+from paper_inbox.modules.config import file, validators
 
 
 class TestConfigFile:
     """Test config file operations"""
     
-    def test_init_config_creates_default_config(self):
+    def test_init_config_creates_default_config(self, tmp_path):
         """Test that init_config creates a config with default values"""
+        mock_file = tmp_path / "config.toml"
+
         with patch('paper_inbox.modules.config.file.get_config_filepath') as mock_path:
-            mock_path.return_value = Path(tempfile.mktemp(suffix='.toml'))
+            mock_path.return_value = mock_file
             result = file.init_config()
             assert result is True
+            assert mock_file.is_file()
     
     def test_get_config_returns_empty_dict_when_no_file(self):
         """Test that get_config returns empty dict when file doesn't exist"""

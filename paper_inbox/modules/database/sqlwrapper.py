@@ -1,8 +1,16 @@
 import json
 import sqlite3
-from datetime import datetime
-from typing import List, Dict, Any, Union, Tuple
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Dict, List, Tuple, TypeAlias, Union
+
 from paper_inbox.modules.database.formatters import convert_entity_type_to_table_name
+
+## type aliases
+DBFilter = Tuple[str, str, Any]
+DBFilterList = List[DBFilter]
+
+
 
 class SQLiteWrapper:
     # Special fields that will be added to all entities
@@ -11,9 +19,9 @@ class SQLiteWrapper:
         'updated_at': 'INTEGER'   # Unix timestamp (seconds since epoch)
     }
 
-    def __init__(self, db_path: str, debug: bool = False):
+    def __init__(self, db_path: Path, debug: bool = False):
         """Initialize database connection"""
-        self.db_path = db_path
+        self.db_path = str(db_path)
         self.debug = debug
 
         # Enable foreign key support
@@ -46,7 +54,7 @@ class SQLiteWrapper:
 
     def _get_current_timestamp(self) -> int:
         """Get current timestamp as Unix epoch (seconds since 1970-01-01)"""
-        return int(datetime.utcnow().timestamp())
+        return int(datetime.now(timezone.utc).timestamp())
 
     def list_tables(self):
         # Connect to the SQLite database
@@ -214,11 +222,11 @@ class SQLiteWrapper:
         return where_clause, values, joins_clause
 
     def find(self, entity_type: str,
-          filters: List[Tuple[str, str, Any]] = None,
-          fields: List[str] = None,
-          order: List[Tuple[str, str]] = None,
-          limit: int = None,
-          after_id: int = None) -> List[Dict]:
+          filters: DBFilterList | None = None,
+          fields: List[str] | None = None,
+          order: List[Tuple[str, str]] | None = None,
+          limit: int | None = None,
+          after_id: int | None = None) -> List[Dict]:
         """Find entities using cursor-based pagination with guaranteed limit"""
         conn = self._get_connection()
         cursor = conn.cursor()
@@ -257,7 +265,7 @@ class SQLiteWrapper:
                 # Get items with:
                 # 1. Same timestamp but higher ID, OR
                 # 2. Earlier timestamp
-                query += f"""
+                query += """
                     AND (
                         (strftime('%s', created_at) = strftime('%s', ?) AND id > ?)
                         OR strftime('%s', created_at) < strftime('%s', ?)
@@ -322,13 +330,13 @@ class SQLiteWrapper:
         return results
     
     def find_one(self, entity_type: str,
-                 filters: List[Tuple[str, str, Any]] = None,
-                 fields: List[str] = None) -> Dict:
+                 filters: DBFilterList | None = None,
+                 fields: List[str] | None = None) -> Dict | None:
         """Find a single entity, return None if not found"""
         results = self.find(entity_type, filters, fields, limit=1)
         return results[0] if results else None
 
-    def create(self, entity_type: str, data: Dict[str, Any], return_entity: bool = False) -> Union[int, Dict[str, Any]]:
+    def create(self, entity_type: str, data: Dict[str, Any]) -> int:
         """Create a new entity with timestamps
         
         Args:
@@ -378,15 +386,8 @@ class SQLiteWrapper:
             entity_id = cursor.lastrowid
 
             conn.commit()
-            
-            if return_entity:
-                # Fetch and return the full entity
-                entity = self.find_one(entity_type, [['id', 'is', entity_id]])
-                conn.close()
-                return entity
-            else:
-                conn.close()
-                return entity_id
+            conn.close()
+            return entity_id
 
         except sqlite3.IntegrityError as e:
             conn.close()
@@ -569,7 +570,7 @@ class SQLiteWrapper:
         conn.close()
         return True
     
-    def add_column(self, table_name: str, column_name: str, column_type: str, references: str = None, on_delete: str = None, not_null: bool = False, default_value: Any = None):
+    def add_column(self, table_name: str, column_name: str, column_type: str, references: str | None = None, on_delete: str | None = None, not_null: bool = False, default_value: Any | None = None):
         """Add a new column to an existing table
         
         Args:
@@ -722,7 +723,7 @@ class SQLiteWrapper:
             raise ValueError(f"Column {column_name} does not exist in table {table_name}")
         
         # Create new table
-        cursor.execute(f"SELECT sql FROM sqlite_master WHERE type='table' AND name=?", (table_name,))
+        cursor.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name=?", (table_name,))
         create_sql = cursor.fetchone()[0]
         
         # Create temporary table

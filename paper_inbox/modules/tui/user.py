@@ -1,10 +1,9 @@
 import questionary
 from platformdirs import user_downloads_dir
+
+from paper_inbox.modules.const import INDENT, INDENT_Q_NEWLINE, QMARK_PREFIX
 from paper_inbox.modules.tui import validators
 from paper_inbox.modules.tui.utils import clear_previous_lines
-from paper_inbox.modules.const import (INDENT, 
-                                       QMARK_PREFIX, 
-                                       INDENT_Q_NEWLINE)
 
 
 def confirm(msg: str = "Do you want to proceed?", 
@@ -52,7 +51,7 @@ def choose_cron_schedule(msg: str = "What's the cron schedule?"):
         clear_previous_lines(1)
         return custom_schedule 
 
-def get_email_address(msg: str = "What's your email address?", example: str = None):
+def get_email_address(msg: str = "What's your email address?", example: str | None = None):
     success = False
     count = 0
     org_msg = str(msg)
@@ -108,7 +107,11 @@ def get_secrets_from_command_line():
     success = False
     count = 0
     while not success and count < 3:
-        msg = f"provide the path to your client secrets file.{INDENT_Q_NEWLINE}you receive this file after setting up your app in your Google Cloud Console{INDENT_Q_NEWLINE}> "
+        msg = "provide the path to your client secrets file."
+        msg += INDENT_Q_NEWLINE
+        msg += "you receive this file after setting up your app in your Google Cloud Console"
+        msg += INDENT_Q_NEWLINE
+        msg += "> "
         if count == 0:
             msg = f"{msg}"
         else:

@@ -1,9 +1,10 @@
-import time
 import logging
+import time
+
 from paper_inbox.modules import config
+from paper_inbox.modules.loggers import setup_logger
 from paper_inbox.modules.printer import cups
 from paper_inbox.modules.utils import is_on_home_network
-from paper_inbox.modules.loggers import setup_logger
 
 logger = setup_logger('printer', logging.INFO, False)
 
@@ -27,6 +28,8 @@ def print_file(filepath: str) -> bool:
         return False
 
     printer = get_printer()
+    assert printer is not None, "No printer found"
+
     cmd = cups.build_cmd(printer, filepath)
     job_id, _ = cups.submit_job(cmd)
     if not job_id:

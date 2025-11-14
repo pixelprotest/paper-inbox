@@ -1,7 +1,9 @@
-import time
 import shutil
-from paper_inbox.modules.const import BEAT 
+import time
+
+from paper_inbox.modules.const import BEAT
 from paper_inbox.modules.tui.utils import spinner
+
 
 @spinner("Checking if CUPS is installed...")
 def is_cups_installed():

@@ -1,18 +1,17 @@
 from typing import Union
+
 from rich.console import Console
+
+from paper_inbox.modules.const import CHECK, CROSS, INFO_INDENT, SEPARATOR
 from paper_inbox.modules.tui.utils import print_text
-from paper_inbox.modules.const import (CHECK, 
-                                       CROSS, 
-                                       INFO_INDENT, 
-                                       SEPARATOR, 
-                                       INFO_INDENT)
+
 
 class SubStepFeedback:
     def __init__(self, 
                  step_name: str, 
                  failed: bool = False, 
-                 type: str = None,
-                 add_info: str = None):
+                 type: str | None = None,
+                 add_info: str | None = None):
         self.step_name = step_name
         self.failed = failed
         self.type = type
@@ -51,7 +50,7 @@ class SubStepFeedback:
         elif self.step_name.startswith("client_secrets"):
             self.name = 'Authentication'
             self.success = "Set up the authentication with Gmail"
-            self.fail = f"Could not copy the client_secrets file"
+            self.fail = "Could not copy the client_secrets file"
             self.feedback = client_secrets_fail()
 
             if self.step_name.endswith(".already_setup"):

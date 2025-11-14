@@ -1,11 +1,13 @@
 # tests/test_printer.py
 """Tests for printer module"""
-import pytest
-import tempfile
 import os  # <-- Add this import
-from unittest.mock import patch, MagicMock
-from paper_inbox.modules.printer.utils import get_printer, print_file
+import tempfile
+from unittest.mock import MagicMock, patch
+
+import pytest
+
 from paper_inbox.modules.printer.convert import docx_to_pdf, html_to_pdf
+from paper_inbox.modules.printer.utils import get_printer, print_file
 
 
 class TestPrinterUtils:

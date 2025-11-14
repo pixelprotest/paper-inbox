@@ -1,7 +1,7 @@
-from paper_inbox.modules.config.file import (write_config, 
-                                             get_config)
+from paper_inbox.modules.config.file import get_config, write_config
 
-def set_email_account(email: str) -> bool:
+
+def set_email_account(email: str):
     update_dict = {
         "EMAIL_ACCOUNT": email
     }

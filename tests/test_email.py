@@ -1,17 +1,18 @@
 # tests/test_email.py
 """Tests for email module"""
 import tempfile
+from datetime import datetime
 from email.message import Message
-from datetime import datetime, timedelta
-from unittest.mock import patch, MagicMock, mock_open
+from unittest.mock import patch
+
 from paper_inbox.modules.email import (
-    format_search_criteria,
     distill_email_ids,
-    get_email_uid,
-    get_email_sent_date,
-    format_email_dict,
     distill_new_emails_from_latest,
     download_attachments,
+    format_email_dict,
+    format_search_criteria,
+    get_email_sent_date,
+    get_email_uid,
 )
 
 
@@ -142,7 +143,7 @@ class TestEmailFunctions:
             with tempfile.TemporaryDirectory() as tmpdir:
                 mock_dir.return_value = tmpdir
                 
-                result = download_attachments(msg, '123')
+                result = download_attachments(msg, 123)
                 assert 'test.pdf' in result
     
     def test_download_attachments_no_attachments(self):
@@ -154,5 +155,5 @@ class TestEmailFunctions:
             with tempfile.TemporaryDirectory() as tmpdir:
                 mock_dir.return_value = tmpdir
                 
-                result = download_attachments(msg, '123')
+                result = download_attachments(msg, 123)
                 assert result == []

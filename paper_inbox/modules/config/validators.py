@@ -1,5 +1,6 @@
 from paper_inbox.modules.config.file import get_config
 
+
 def has_email_account_defined() -> bool:
     config = get_config()
     return config.get("EMAIL_ACCOUNT") is not None and config.get("EMAIL_ACCOUNT") != ""

@@ -1,7 +1,8 @@
-import re
-import time
 import logging
+import re
 import subprocess
+import time
+
 from paper_inbox.modules import config
 from paper_inbox.modules.loggers import setup_logger
 

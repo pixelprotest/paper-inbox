@@ -1,19 +1,15 @@
-import time
 import logging
+import time
 from functools import wraps
+
 from rich.console import Console
-from paper_inbox.modules import tui, config
-from paper_inbox.modules import dependencies, cron
+
+from paper_inbox.modules import config, cron, dependencies, tui
 from paper_inbox.modules.auth import gmail
+from paper_inbox.modules.const import BEAT, BLUE, CHECK, GREEN, INDENT_Q_NEWLINE, RED
+from paper_inbox.modules.loggers import setup_logger
 from paper_inbox.modules.tui import user
 from paper_inbox.modules.tui.info import SubStepFeedback
-from paper_inbox.modules.const import (BLUE, 
-                                       GREEN, 
-                                       RED, 
-                                       CHECK, 
-                                       BEAT, 
-                                       INDENT_Q_NEWLINE)
-from paper_inbox.modules.loggers import setup_logger
 
 logger = setup_logger('tui_render', logging.INFO, silent_logging=True)
 
@@ -30,8 +26,8 @@ def setup_step(msg_A: str, msg_B: str, lines_to_clear: int = 2):
     def decorator(func):
         @wraps(func)
         def wrapper(console: Console, 
-                    step_number: int = None, 
-                    total_steps: int = None):
+                    step_number: int | None = None, 
+                    total_steps: int | None = None):
             ## format the title and success messages
             failure_msg = None
             title_msg, success_msg = tui.utils.format_title_success_msgs(msg_A, 
@@ -76,8 +72,8 @@ def setup_step(msg_A: str, msg_B: str, lines_to_clear: int = 2):
 
 @setup_step("Checking for system dependencies", "System dependencies found", lines_to_clear=4)
 def dependency_validation(console: Console, 
-                          step_number: int = None, 
-                          total_steps: int = None):
+                          step_number: int | None = None, 
+                          total_steps: int | None = None):
     """
     Validates the system dependencies by showing a spinner and running a function.
     Args:
@@ -109,8 +105,8 @@ def dependency_validation(console: Console,
 
 @setup_step("Setting up the configuration", "Configuration complete", lines_to_clear=4)
 def config_setup(console: Console, 
-                 step_number: int = None, 
-                 total_steps: int = None):
+                 step_number: int | None = None, 
+                 total_steps: int | None = None):
     """
     Sets up the configuration by showing a spinner and running a function.
     Args:
@@ -148,7 +144,7 @@ def config_setup(console: Console,
         item.print(console)
 
     ## --- sender emails --- 
-    tui.utils.show_spinner(f"Let's set up the sender emails", BEAT)
+    tui.utils.show_spinner("Let's set up the sender emails", BEAT)
     has_senders = config.validators.has_sender_emails_defined()
     extra_count = 0 
     if not has_senders:
@@ -182,8 +178,8 @@ def config_setup(console: Console,
 
 @setup_step("Setting up the network", "Network setup complete", lines_to_clear=2)
 def network_setup(console: Console, 
-                  step_number: int = None, 
-                  total_steps: int = None):
+                  step_number: int | None = None, 
+                  total_steps: int | None = None):
     """
     Sets up the network by showing a spinner and running a function.
     Args:
@@ -223,8 +219,8 @@ def network_setup(console: Console,
 
 @setup_step("Setting up the cron", "Cron setup complete", lines_to_clear=1)
 def cron_setup(console: Console, 
-               step_number: int = None, 
-               total_steps: int = None):
+               step_number: int | None = None, 
+               total_steps: int | None = None):
     """
     Sets up the cron by showing a spinner and running a function.
     Args:
@@ -242,7 +238,7 @@ def cron_setup(console: Console,
     lines_to_clear = 1
     if current_cron_schedule:
         tui.utils.print_text(f"Currently the cron job is set to {current_cron_schedule}", console, None, indent=True)
-        msg = f"Would you like to change it?"
+        msg = "Would you like to change it?"
         lines_to_clear = 2
     confirm = user.confirm(msg, indent=True, line_count=lines_to_clear)
 
@@ -274,8 +270,8 @@ def cron_setup(console: Console,
 
 @setup_step("Setting up Gmail authentication", "Gmail authentication complete", lines_to_clear=2)
 def auth_setup(console: Console, 
-                  step_number: int = None, 
-                  total_steps: int = None):
+                  step_number: int | None = None, 
+                  total_steps: int | None = None):
     """
     Sets up the authentication secrets by showing a spinner and running a function.
     Args:
@@ -339,8 +335,8 @@ def auth_setup(console: Console,
 
 @setup_step("Setting up Telegram notifications", "Telegram bot setup complete", lines_to_clear=3)
 def telegram_bot_setup(console: Console, 
-                       step_number: int = None, 
-                       total_steps: int = None):
+                       step_number: int | None = None, 
+                       total_steps: int | None = None):
     """
     Sets up the Telegram bot by showing a spinner and running a function.
     Args:

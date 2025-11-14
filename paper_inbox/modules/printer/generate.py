@@ -1,14 +1,15 @@
-import os
-import logging
-import tempfile
 import html as _html
+import logging
+import os
+import tempfile
 from datetime import datetime
-from paper_inbox.modules.printer import convert
+
 from paper_inbox.modules.loggers import setup_logger
+from paper_inbox.modules.printer import convert
 
 logger = setup_logger('printer', logging.INFO, False)
 
-def generate_email_pdf(email: dict, email_dir: str) -> str:
+def generate_email_pdf(email: dict, email_dir: str) -> str | None:
     """
     Generates a pdf from an email, by first building it up
     as a HTML file, then converting to PDF.

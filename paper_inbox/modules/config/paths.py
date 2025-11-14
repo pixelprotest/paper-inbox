@@ -1,9 +1,11 @@
 import os
-import platformdirs
 from pathlib import Path
+
+import platformdirs
+
 from paper_inbox import APP_NAME
 
-DEV_MODE = os.getenv(f'PAPER_INBOX_DEV', '').lower() in ('1', 'true', 'yes')
+DEV_MODE = os.getenv('PAPER_INBOX_DEV', '').lower() in ('1', 'true', 'yes')
 DEV_ROOT_DIR = Path(__file__).parent.parent.parent.parent / "dev"
 
 def get_config_dir() -> Path:

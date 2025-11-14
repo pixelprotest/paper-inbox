@@ -1,6 +1,7 @@
 import os
 import re
 
+
 def is_valid_client_secrets_path(filepath: str) -> bool:
     if not os.path.exists(filepath):
         return False

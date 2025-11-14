@@ -1,24 +1,28 @@
+import logging
 import sys
 import time
-import logging
+
 from paper_inbox.modules import config, tui
+from paper_inbox.modules.database.utils import (
+    does_database_exist,
+    get_database_handle,
+    get_email_from_db_by_id,
+    get_unprinted_emails,
+    set_all_emails_as_printed,
+    set_email_as_printed,
+    update_email_attachments,
+)
+from paper_inbox.modules.email import (
+    add_email_to_database,
+    distill_new_emails_from_latest,
+    download_attachments,
+    download_email,
+    fetch_latest_emails,
+)
+from paper_inbox.modules.loggers import setup_logger
 from paper_inbox.modules.printer.utils import print_file
 from paper_inbox.modules.telegram import send_telegram_notification
-from paper_inbox.modules.utils import (collect_files_to_print, 
-                                       retry_on_failure)
-from paper_inbox.modules.email import (fetch_latest_emails,
-                                       distill_new_emails_from_latest,
-                                       download_attachments,
-                                       download_email,
-                                       add_email_to_database)
-from paper_inbox.modules.database.utils import (get_database_handle, 
-                                                get_unprinted_emails, 
-                                                set_email_as_printed,
-                                                update_email_attachments,
-                                                get_email_from_db_by_id,
-                                                does_database_exist,
-                                                set_all_emails_as_printed)
-from paper_inbox.modules.loggers import setup_logger
+from paper_inbox.modules.utils import collect_files_to_print, retry_on_failure
 
 logger = setup_logger('main', logging.INFO, False)
 
@@ -125,6 +129,8 @@ def print_emails(limit: int = 3) -> int:
     emails_printed = 0
     for email in unprinted_emails[:limit]:
         email_id = email.get('id')
+        assert email_id is not None, "Email ID is None"
+
         email_obj = get_email_from_db_by_id(email_id)
         email_subject = email_obj.get('subject')
         files_to_print = collect_files_to_print(email_id)

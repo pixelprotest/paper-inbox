@@ -1,9 +1,10 @@
 # tests/test_telegram.py
 """Tests for telegram module"""
-import pytest
+from unittest.mock import MagicMock, patch
+
 import requests  # <-- Add this import
-from unittest.mock import patch, MagicMock
-from paper_inbox.modules.telegram import send_telegram_notification, send_msg
+
+from paper_inbox.modules.telegram import send_msg, send_telegram_notification
 
 
 class TestTelegram:
@@ -39,7 +40,7 @@ class TestTelegram:
         """Test error handling for request exceptions"""
         with patch('requests.post') as mock_post:
             # Raise a RequestException (which is what the code actually catches)
-            mock_post.side_effect = requests.exceptions.RequestException('Network error')
+            mock_post.side_effect = requests.RequestException('Network error')
             
             with patch('paper_inbox.modules.config.telegram_bot_token', 'test-token'):
                 with patch('paper_inbox.modules.config.telegram_chat_id', '123456'):

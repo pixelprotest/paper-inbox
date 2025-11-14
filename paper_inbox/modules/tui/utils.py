@@ -1,24 +1,25 @@
 import os
-import time
 import shutil
 import subprocess
-from pathlib import Path
+import time
 from functools import wraps
-from rich.live import Live
-from rich.text import Text
-from rich.table import Table
+from pathlib import Path
+from typing import Callable
+
 from rich.console import Console
+from rich.live import Live
 from rich.spinner import Spinner
-from paper_inbox.modules.const import (PINK, 
-                                       CHECK, 
-                                       CROSS, 
-                                       BEAT,
-                                       CLEAR_SLEEP, 
-                                       INDENT)
+from rich.table import Table
+from rich.text import Text
+
 from paper_inbox.modules.config.file import init_config
-from paper_inbox.modules.config.paths import (get_config_filepath,
-                                              get_secrets_filepath, 
-                                              get_refresh_token_filepath) 
+from paper_inbox.modules.config.paths import (
+    get_config_filepath,
+    get_refresh_token_filepath,
+    get_secrets_filepath,
+)
+from paper_inbox.modules.const import BEAT, CHECK, CLEAR_SLEEP, CROSS, INDENT, PINK
+
 
 def clear_previous_lines(lines: int = 1, immediate: bool = False):
     """Moves cursor up N lines and clears them."""
@@ -33,11 +34,13 @@ def clear_previous_lines(lines: int = 1, immediate: bool = False):
 
 def show_spinner(message: str, seconds: float = 3.0, indent: bool = True):
     """Shows a spinner for a given duration, updating the message every second."""
-    indent = Text(INDENT)
+    indent_obj = Text("")
+    if indent:
+        indent_obj = Text(INDENT)
     spinner = Spinner("dots", text=Text.from_markup(message), style=PINK)
 
     render_table = Table.grid()
-    render_table.add_row(indent, spinner)
+    render_table.add_row(indent_obj, spinner)
 
     with Live(render_table, refresh_per_second=10, transient=True):
         if seconds < 1.0:
@@ -53,13 +56,15 @@ def show_spinner(message: str, seconds: float = 3.0, indent: bool = True):
 
 def spinner(message: str, indent: bool = True):
     """Decorator to show a spinner while a function is running."""
-    def decorator(func: callable):
+    def decorator(func: Callable):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            indent = Text(INDENT)
+            indent_obj = Text("")
+            if indent:
+                indent_obj = Text(INDENT)
             spinner_obj = Spinner("dots", text=Text.from_markup(message), style=PINK)
             render_table = Table.grid()
-            render_table.add_row(indent, spinner_obj)
+            render_table.add_row(indent_obj, spinner_obj)
 
             with Live(render_table, refresh_per_second=10, transient=True):
                 result = func(*args, **kwargs)
@@ -68,7 +73,7 @@ def spinner(message: str, indent: bool = True):
     return decorator
 
 
-def print_text(text: str, console: Console, color: str = "blue1", bold: bool = False, indent: bool = False):
+def print_text(text: str, console: Console, color: str | None = "blue1", bold: bool = False, indent: bool = False):
     """
     suggested colors are 'blue1' and 'orchid2'
     """
@@ -88,8 +93,8 @@ def print_text(text: str, console: Console, color: str = "blue1", bold: bool = F
 
 def format_title_success_msgs(msg_A: str, 
                               msg_B: str, 
-                              step_number: int = None, 
-                              total_steps: int = None) -> tuple[str, str]:
+                              step_number: int | None = None, 
+                              total_steps: int | None = None) -> tuple[str, str]:
     """
     Formats the title and success messages for a given step number and total steps.
     Args:
@@ -108,7 +113,7 @@ def format_title_success_msgs(msg_A: str,
 
     return title_msg, success_msg
 
-def format_failure_msg(failure_msg: str, step_number: int = None, total_steps: int = None) -> str:
+def format_failure_msg(failure_msg: str, step_number: int | None = None, total_steps: int | None = None) -> str:
     """
     Formats the failure message for a given step number and total steps.
     Args:

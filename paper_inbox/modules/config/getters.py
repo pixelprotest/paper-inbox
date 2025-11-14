@@ -1,11 +1,12 @@
 import os
 import shutil
+
 from paper_inbox.modules.config.file import get_config
 
 CONFIG = get_config()
 
-telegram_bot_token: str = CONFIG.get("TELEGRAM_BOT_TOKEN")
-telegram_chat_id: str = CONFIG.get("TELEGRAM_CHAT_ID")
+telegram_bot_token: str | None = CONFIG.get("TELEGRAM_BOT_TOKEN")
+telegram_chat_id: str | None = CONFIG.get("TELEGRAM_CHAT_ID")
 _has_token: bool = bool(telegram_bot_token)
 _has_chatID: bool = bool(telegram_chat_id)
 _send_telegram: bool = bool(CONFIG.get("SEND_TELEGRAM_NOTIFICATIONS"))
@@ -21,10 +22,10 @@ network_retry_max_retries: int = 3
 network_retry_delay: int = 10
 
 ## network auth
-trusted_ssids = CONFIG.get("TRUSTED_SSIDS")
-email_account = CONFIG.get("EMAIL_ACCOUNT")
-email_senders = CONFIG.get("EMAIL_FROM")
-email_server_url = CONFIG.get("IMAP_SERVER")
+trusted_ssids: list[str] | None = CONFIG.get("TRUSTED_SSIDS")
+email_account: str | None = CONFIG.get("EMAIL_ACCOUNT")
+email_senders: list[str] | None = CONFIG.get("EMAIL_FROM")
+email_server_url: str | None = CONFIG.get("IMAP_SERVER")
 
 ## not linked into the config file yet ----------------------------------------------------
 ## Paths to external dependencies

@@ -1,15 +1,18 @@
 from __future__ import annotations
+
+import functools
+import logging
 import os
+import subprocess
 import sys
 import time
-import logging
-import functools
-import subprocess
 from socket import gaierror
-from paper_inbox.modules import cron, config
+from typing import TYPE_CHECKING
+
+from paper_inbox.modules import config, cron
 from paper_inbox.modules.const import GREEN
 from paper_inbox.modules.loggers import setup_logger
-from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from rich.console import Console
 
@@ -51,6 +54,7 @@ def is_on_home_network() -> bool:
     try:
         ssid = subprocess.check_output(["iwgetid", "-r"]).decode().strip()
         logger.info(f"Connected to Wi-Fi: {ssid}")
+        assert config.trusted_ssids is not None, "Trusted SSIDs is None"
         return ssid in config.trusted_ssids
     except (subprocess.CalledProcessError, FileNotFoundError):
         logger.warning("Could not determine Wi-Fi network. Assuming not on a home network.")
@@ -104,7 +108,7 @@ def open_config_dir(console: Console):
         else: # Linux and other Unix-like systems
             subprocess.run(["xdg-open", str(config_path)], check=True)
     except FileNotFoundError:
-        console.print(f"[bold red]Error:[/] Could not open the file explorer.")
+        console.print("[bold red]Error:[/] Could not open the file explorer.")
         console.print("Please navigate to the directory manually.")
     except Exception as e:
         console.print(f"[bold red]Error:[/] An unexpected error occurred: {e}")

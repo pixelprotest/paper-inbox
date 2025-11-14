@@ -1,9 +1,11 @@
-import time
 import shutil
 import subprocess
+import time
+
 from paper_inbox import CLI_ENTRY_POINT
-from paper_inbox.modules.const import BEAT 
+from paper_inbox.modules.const import BEAT
 from paper_inbox.modules.tui.utils import spinner
+
 
 @spinner("Checking for cron schedule...")
 def find_cron_schedule():
@@ -43,7 +45,7 @@ def find_cron_schedule():
     except FileNotFoundError:
         # crontab command not available
         return None
-    except Exception as e:
+    except Exception:
         # Other errors
         return None
 
@@ -61,8 +63,7 @@ def set_cron_schedule(cron_schedule: str):
     time.sleep(BEAT * 4)
     
     try:
-        from paper_inbox.modules.config.paths import get_log_dir 
-        # Format: SCHEDULE cd PROJECT_DIR && uv run calc run >> PROJECT_DIR/logs/cron.log 2>&1
+        from paper_inbox.modules.config.paths import get_log_dir
         ## get the bin to this app.
         bin_path = shutil.which(CLI_ENTRY_POINT)
         cron_line = f"{cron_schedule} {bin_path} >> {get_log_dir()}/cron.log 2>&1"
@@ -101,7 +102,7 @@ def set_cron_schedule(cron_schedule: str):
     except FileNotFoundError:
         # crontab command not available
         return False
-    except Exception as e:
+    except Exception:
         # Other errors
         return False
 
@@ -112,11 +113,6 @@ def remove_cron_schedule():
     
     Returns:
         True if successful, False otherwise
-    
-    Based on Makefile cron-remove:
-        @echo "Removing cron job..."
-        @crontab -l 2>/dev/null | grep -v "cron-email-printer/main.py" | crontab - || true
-        @echo "✓ Cron job removed"
     """
     time.sleep(BEAT * 2)
     
@@ -155,6 +151,6 @@ def remove_cron_schedule():
     except FileNotFoundError:
         # crontab command not available
         return False
-    except Exception as e:
+    except Exception:
         # Other errors
         return False

@@ -1,7 +1,8 @@
-import os
-import sys
 import logging
+import os
 import subprocess
+import sys
+
 from paper_inbox.modules import config
 from paper_inbox.modules.loggers import setup_logger
 

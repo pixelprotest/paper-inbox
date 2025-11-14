@@ -1,9 +1,10 @@
-import os
-import logging
 import datetime
-from paper_inbox.modules.loggers import setup_logger
-from paper_inbox.modules.database.sqlwrapper import SQLiteWrapper
+import logging
+import os
+
 from paper_inbox.modules.config.paths import get_database_filepath
+from paper_inbox.modules.database.sqlwrapper import SQLiteWrapper
+from paper_inbox.modules.loggers import setup_logger
 
 logger = setup_logger('database', logging.INFO, False)
 
