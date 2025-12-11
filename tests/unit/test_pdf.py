@@ -1,7 +1,8 @@
-import pytest
 from unittest.mock import MagicMock, patch
-from paper_inbox.modules.pdf import utils, validators, exceptions
-   
+
+import pytest
+
+from paper_inbox.modules.pdf import exceptions, utils, validators
 
 
 class TestPDFFunctions:
@@ -56,11 +57,11 @@ PDF version:     1.4
         with patch('paper_inbox.modules.pdf.utils.info_as_string') as mock_info_str:
             mock_info_str.return_value = str(self.example_output_libreoffice)
             result = utils.is_canva('placeholder_filepath')
-            assert result == False
+            assert not result
     
     def test_is_canva_returns_true(self):
         with patch('paper_inbox.modules.pdf.utils.info_as_string') as mock_info_str:
             mock_info_str.return_value = str(self.example_output_canva)
             result = utils.is_canva('placeholder_filepath')
-            assert result == True
+            assert result
     

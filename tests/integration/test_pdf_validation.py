@@ -1,8 +1,10 @@
 import os
 from pathlib import Path
-from paper_inbox.modules.pdf import utils, exceptions, validators
 
 import pytest
+
+from paper_inbox.modules.pdf import exceptions, utils, validators
+
 
 class TestPDFFunctions:
     """ pdf functions integration tests """
@@ -20,17 +22,17 @@ class TestPDFFunctions:
     wrong_magicheader = d / "wrong_magicheader.pdf"
         
     def test_is_valid(self):
-        assert utils.is_valid(self.valid) == True
-        assert utils.is_valid(self.invalid_trailer) == False
-        assert utils.is_valid(self.canva) == True
-        assert utils.is_valid(self.missing_endobj) == False 
-        assert utils.is_valid(self.missing_eof) == False 
-        assert utils.is_valid(self.no_xref) == False 
-        assert utils.is_valid(self.wrong_offsets) == False 
+        assert utils.is_valid(self.valid)
+        assert utils.is_valid(self.canva)
+        assert not utils.is_valid(self.invalid_trailer)
+        assert not utils.is_valid(self.missing_endobj)
+        assert not utils.is_valid(self.missing_eof)
+        assert not utils.is_valid(self.no_xref)
+        assert not utils.is_valid(self.wrong_offsets)
     
     def test_is_canva(self):
-        assert utils.is_canva(self.canva) == True
-        assert utils.is_canva(self.valid) == False
+        assert utils.is_canva(self.canva)
+        assert not utils.is_canva(self.valid)
 
     def test_validate_mimetype(self):
         with pytest.raises(exceptions.InvalidMimeType):

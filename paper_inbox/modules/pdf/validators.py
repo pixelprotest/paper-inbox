@@ -1,7 +1,10 @@
 from __future__ import annotations
+
 import subprocess
-from paper_inbox.modules.pdf import exceptions
 import typing as t
+
+from paper_inbox.modules.pdf import exceptions
+
 if t.TYPE_CHECKING:
     from pathlib import Path
 
