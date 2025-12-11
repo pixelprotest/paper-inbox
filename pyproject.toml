@@ -39,7 +39,7 @@ paper-inbox = "paper_inbox.cli:main"
 Homepage = "https://github.com/pixelprotest/paper-inbox"
 "Bug Tracker" = "https://github.com/pixelprotest/paper-inbox/issues"
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "build>=1.3.0",
     "pikepdf>=10.0.2",
@@ -65,4 +65,3 @@ ignore = [
     "F841",
     "F401",
 ]
-

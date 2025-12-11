@@ -47,7 +47,9 @@ def download_attachments(msg: Message, email_id: int) -> list[str]:
             os.makedirs(email_dir, exist_ok=True)
             filepath = os.path.join(email_dir, filename)
             with open(filepath, "wb") as f:
-                f.write(part.get_payload(decode=True))
+                payload = part.get_payload(decode=True)
+                assert isinstance(payload, bytes), "Email part payload must be bytes"
+                f.write(payload)
             
             if filename.lower().endswith(".docx"):
                 pdf_filepath = convert.docx_to_pdf(filepath)
@@ -155,20 +157,26 @@ def format_email_dict(email: Message) -> dict:
             # Get text/plain parts
             if content_type == "text/plain":
                 try:
-                    body = part.get_payload(decode=True).decode('utf-8', errors='ignore')
+                    payload = part.get_payload(decode=True)
+                    assert isinstance(payload, bytes), "Expected bytes payload for text/plain part"
+                    body = payload.decode("utf-8", errors="ignore")
                     break  # Use the first text/plain part
                 except Exception as e:
                     pass
             # Fallback to text/html if no text/plain found
             elif content_type == "text/html" and not body:
                 try:
-                    body = part.get_payload(decode=True).decode('utf-8', errors='ignore')
+                    payload = part.get_payload(decode=True)
+                    assert isinstance(payload, bytes), "Expected bytes payload for text/plain part"
+                    body = payload.decode('utf-8', errors='ignore')
                 except Exception as e:
                     pass
     else:
         # For non-multipart messages
         try:
-            body = email.get_payload(decode=True).decode('utf-8', errors='ignore')
+            payload = email.get_payload(decode=True)
+            assert isinstance(payload, bytes), "Expected bytes payload for text/plain part"
+            body = payload.decode("utf-8", errors="ignore")
         except Exception as e:
             body = str(email.get_payload())
     

@@ -430,7 +430,7 @@ class SQLiteWrapper:
 
         conn.commit()
         if return_entity:
-            entity = self.find_one(entity_type, [['id', 'is', entity_id]])
+            entity = self.find_one(entity_type, [('id', 'is', entity_id)])
             conn.close()
             return entity
         else:

@@ -31,7 +31,6 @@ logo.png
 *.venv
 .pytest_cache
 __pycache__
-uv.lock
 logs/
 dev/
 *.log

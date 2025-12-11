@@ -17,8 +17,8 @@ def html_to_pdf(html_filepath: str, output_filepath: str) -> str | None:
     output_dir = os.path.dirname(output_filepath)
     
     try:
-        cmd = [
-            config.libreoffice_path,
+        cmd: list[str] = [
+            str(config.libreoffice_path),
             "--headless",
             "--writer",
             "--convert-to",

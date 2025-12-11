@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import os
+import shutil
 import subprocess
 import typing as t
+from pathlib import Path
 
 from paper_inbox.modules.pdf import exceptions, validators
 
@@ -49,3 +51,50 @@ def info_as_dict(filepath: str | Path) -> dict:
             info[key.strip()] = value.strip()
 
     return info
+
+
+def fix_pdf(input_path: str | Path) -> bool:
+    """ attempts to fix malformed pdfs by re-exporting using libreoffice """
+    if isinstance(input_path, str):
+        input_path = Path(input_path)
+
+    if not input_path.exists():
+        raise FileNotFoundError(f"Input PDF does not exist: {input_path}")
+    
+    ## create subdir, as libreoffice will use same name.
+    input_dir = input_path.parent
+    output_dir = input_dir / 'fix' 
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / input_path.name
+    ## set up a path for the original pdf to stay after conversion
+    backup_path = input_dir / (input_path.stem + '_original.pdf')
+
+    ## run the pdf through libreoffice
+    cmd = [
+        "soffice",
+        "--headless",
+        "--convert-to", "pdf",
+        "--outdir", output_dir,
+        str(input_path)
+    ]
+
+    result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"LibreOffice failed:\nSTDOUT:\n{result.stdout.decode()}\nSTDERR:\n{result.stderr.decode()}"
+        )
+
+    ## check if the 'fixed' pdf is valid
+    valid = is_valid(output_path)
+    if not valid: ## cleanup and return False
+        output_path.unlink()
+        output_dir.rmdir()
+        return False
+
+    ## copy original file to backup 
+    shutil.copyfile(input_path, backup_path)
+    ## overwrite original input_path
+    os.replace(output_path, input_path)
+    output_dir.rmdir()
+
+    return True
