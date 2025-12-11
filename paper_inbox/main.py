@@ -20,6 +20,7 @@ from paper_inbox.modules.email import (
     fetch_latest_emails,
 )
 from paper_inbox.modules.loggers import setup_logger
+from paper_inbox.modules.pdf import utils as pdf
 from paper_inbox.modules.printer.utils import print_file
 from paper_inbox.modules.telegram import send_telegram_notification
 from paper_inbox.modules.utils import collect_files_to_print, retry_on_failure
@@ -138,6 +139,8 @@ def print_emails(limit: int = 3) -> int:
         completed_list = []
         for filepath in files_to_print:
             logger.info(f"Printing file: {filepath}")
+            if not pdf.is_valid(filepath): ## guard printer against invalid pdfs
+                continue
             completed = print_file(filepath)
             completed_list.append(completed)
             time.sleep(1)
