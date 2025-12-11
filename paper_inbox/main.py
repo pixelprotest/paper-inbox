@@ -18,6 +18,7 @@ from paper_inbox.modules.email import (
     download_attachments,
     download_email,
     fetch_latest_emails,
+    get_fullpaths_for_attachments,
 )
 from paper_inbox.modules.loggers import setup_logger
 from paper_inbox.modules.pdf import utils as pdf
@@ -105,6 +106,10 @@ def check_emails(initial_run: bool = False):
     for email in new:
         email_id = add_email_to_database(email, db)
         attachments = download_attachments(email, email_id)
+        ## get the full paths for the attachments, and validate them
+        fullpaths = get_fullpaths_for_attachments(attachments, email_id)
+        pdf.validate_pdfs(fullpaths)
+        ## update the database
         update_email_attachments(email_id, attachments)
         ## finally generate / download the email as a html file.
         html_filepath = download_email(email_id)

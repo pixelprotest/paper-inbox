@@ -11,6 +11,15 @@ from paper_inbox.modules.pdf import exceptions, validators
 if t.TYPE_CHECKING:
     from pathlib import Path
 
+def validate_pdfs(files: list[Path]):
+    ## filter the files to only keep the pdfs.
+    pdf_files = [x for x in files if Path(x).suffix.lower()=='.pdf']
+    ## run through the attachments and fix them if canva or syntax error.
+    to_fix = [x for x in pdf_files if is_canva(x) or not is_valid(x)]
+    for item in to_fix:
+        fix_pdf(item)
+
+
 def is_canva(filepath: str | Path) -> bool:
     info = info_as_dict(filepath)
     creator = info.get('Creator', None)

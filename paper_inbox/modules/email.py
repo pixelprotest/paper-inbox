@@ -7,6 +7,7 @@ import os
 from datetime import datetime, timedelta
 from email.message import Message
 from email.utils import parsedate_to_datetime
+from pathlib import Path
 from typing import TYPE_CHECKING, List
 
 from paper_inbox.modules import config
@@ -14,6 +15,7 @@ from paper_inbox.modules.auth.gmail import get_credentials
 from paper_inbox.modules.config.paths import get_refresh_token_filepath
 from paper_inbox.modules.database.utils import does_email_exist, get_email_from_db_by_id
 from paper_inbox.modules.loggers import setup_logger
+from paper_inbox.modules.pdf import utils as pdf
 from paper_inbox.modules.printer import convert
 from paper_inbox.modules.printer.generate import generate_email_pdf
 from paper_inbox.modules.utils import get_data_download_dir, retry_on_failure
@@ -60,6 +62,11 @@ def download_attachments(msg: Message, email_id: int) -> list[str]:
             attachments.append(filename)
 
     return attachments
+
+def get_fullpaths_for_attachments(filenames: list[str], email_id: int) -> list[Path]:
+    email_dir = get_data_download_dir(email_id)
+    full_paths = [(Path(email_dir) / x) for x in filenames]
+    return full_paths
 
 def download_email(email_id: int) -> str:
     """
