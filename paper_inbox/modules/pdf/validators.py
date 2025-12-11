@@ -29,7 +29,7 @@ def validate_structure(filepath: str | Path) -> None:
     res = subprocess.run(["pdfinfo", filepath], capture_output=True, text=True)
     result = res.stderr + res.stdout
 
-    if 'Syntax Error' in result:
+    if 'Syntax Error' in result or 'Syntax Warning' in result:
         raise exceptions.SyntaxErrorInPDFStructure(result)
     if 'Error' in result:
         raise exceptions.ErrorInPDFStructure(result)

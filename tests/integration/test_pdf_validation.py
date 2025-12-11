@@ -1,4 +1,5 @@
 import os
+import shutil
 from pathlib import Path
 
 import pytest
@@ -20,6 +21,7 @@ class TestPDFFunctions:
     wrong_offsets = d / "wrong_offsets.pdf"
     wrong_mimetype = d / "wrong_mimetype.png"
     wrong_magicheader = d / "wrong_magicheader.pdf"
+    valid_with_syntax_error = d / "valid_syntaxerror.pdf"
         
     def test_is_valid(self):
         assert utils.is_valid(self.valid)
@@ -60,3 +62,18 @@ class TestPDFFunctions:
         with pytest.raises(exceptions.SyntaxErrorInPDFStructure):
             validators.validate_structure(self.no_xref)
         validators.validate_structure(self.valid)
+
+    def test_fix_pdf(self):
+        tmp_dir = self.d / 'tmp'
+        tmp_dir.mkdir(parents=True, exist_ok=True)
+        test_path = tmp_dir / 'test.pdf'
+        shutil.copy(self.valid_with_syntax_error, test_path)
+
+        ## assert applied fix works
+        assert not utils.is_valid(test_path)
+        utils.fix_pdf(test_path)
+        assert utils.is_valid(test_path)
+
+        ## cleanup
+        _ = [f.unlink() for f in tmp_dir.iterdir() if f.is_file()]
+        tmp_dir.rmdir()
