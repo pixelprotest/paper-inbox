@@ -42,8 +42,11 @@ Homepage = "https://github.com/pixelprotest/paper-inbox"
 [project.optional-dependencies]
 dev = [
     "build>=1.3.0",
+    "pikepdf>=10.0.2",
+    "pypdf2>=3.0.1",
     "pytest>=8.4.2",
     "pytest-cov>=7.0.0",
+    "reportlab>=4.4.6",
     "ruff>=0.14.5",
     "ty>=0.0.1a26",
 ]

@@ -1,0 +1,60 @@
+import os
+from pathlib import Path
+from paper_inbox.modules.pdf import utils, exceptions, validators
+
+import pytest
+
+class TestPDFFunctions:
+    """ pdf functions integration tests """
+
+    d = Path(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures'))
+    valid = d / "valid.pdf"
+    canva = d / "canva.pdf"
+    html = d / "html.pdf"
+    invalid_trailer = d / "invalid_trailer.pdf"
+    missing_endobj = d / "missing_endobj.pdf"
+    missing_eof = d / "missing_eof.pdf"
+    no_xref = d / "no_xref.pdf"
+    wrong_offsets = d / "wrong_offsets.pdf"
+    wrong_mimetype = d / "wrong_mimetype.png"
+    wrong_magicheader = d / "wrong_magicheader.pdf"
+        
+    def test_is_valid(self):
+        assert utils.is_valid(self.valid) == True
+        assert utils.is_valid(self.invalid_trailer) == False
+        assert utils.is_valid(self.canva) == True
+        assert utils.is_valid(self.missing_endobj) == False 
+        assert utils.is_valid(self.missing_eof) == False 
+        assert utils.is_valid(self.no_xref) == False 
+        assert utils.is_valid(self.wrong_offsets) == False 
+    
+    def test_is_canva(self):
+        assert utils.is_canva(self.canva) == True
+        assert utils.is_canva(self.valid) == False
+
+    def test_validate_mimetype(self):
+        with pytest.raises(exceptions.InvalidMimeType):
+            validators.validate_mime_type(self.wrong_mimetype)
+        validators.validate_mime_type(self.valid)
+
+    def test_validate_magic_header(self):
+        with pytest.raises(exceptions.MalformedMagicHeader):
+            validators.validate_magic_header(self.wrong_magicheader)
+        validators.validate_magic_header(self.valid)
+
+    def test_validate_file_head(self):
+        with pytest.raises(exceptions.MalformedFileHead):
+            validators.validate_file_head(self.wrong_magicheader)
+        validators.validate_file_head(self.valid)
+
+    def test_validate_not_html(self):
+        with pytest.raises(exceptions.InvalidDataTypeHTML):
+            validators.validate_not_html(self.html)
+        validators.validate_not_html(self.valid)
+
+    def test_validate_structure(self):
+        with pytest.raises(exceptions.SyntaxErrorInPDFStructure):
+            validators.validate_structure(self.missing_endobj)
+        with pytest.raises(exceptions.SyntaxErrorInPDFStructure):
+            validators.validate_structure(self.no_xref)
+        validators.validate_structure(self.valid)
