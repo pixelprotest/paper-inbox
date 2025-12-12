@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "paper-inbox"
-version = "2025.12.12rc2"
+version = "2025.12.12"
 description = """Lift the signal from the noise 
     by automatically printing out email paper copies 
     from the senders you do care about."""
