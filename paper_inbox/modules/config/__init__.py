@@ -14,6 +14,7 @@ from paper_inbox.modules.config.getters import (
     skip_printing_irl,
     telegram_bot_token,
     telegram_chat_id,
+    telegram_verbose_mode,
     trusted_ssids,
 )
 
@@ -36,4 +37,5 @@ __all__ = [
     'force_grayscale',
     'cups_path',
     'libreoffice_path',
+    'telegram_verbose_mode',
 ]

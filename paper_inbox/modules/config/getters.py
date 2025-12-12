@@ -27,7 +27,7 @@ email_account: str | None = CONFIG.get("EMAIL_ACCOUNT")
 email_senders: list[str] | None = CONFIG.get("EMAIL_FROM")
 email_server_url: str | None = CONFIG.get("IMAP_SERVER")
 
-## not linked into the config file yet ----------------------------------------------------
+## not exposed in config file yet ----------------------------------------------------
 ## Paths to external dependencies
 cups_path: str | None = os.getenv("LPSTAT_PATH") or shutil.which("lpstat")
 libreoffice_path: str | None = os.getenv("LIBREOFFICE_PATH") or shutil.which("libreoffice")
@@ -39,3 +39,6 @@ skip_printing_irl: bool = False
 
 ## force grayscale printing
 force_grayscale: bool = True
+
+## verbose mode will send telegram msg each time it checks email
+telegram_verbose_mode: bool = False

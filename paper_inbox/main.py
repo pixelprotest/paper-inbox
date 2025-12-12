@@ -45,10 +45,12 @@ def run_app():
     fetch_count, new_count = check_emails(initial_run=is_initial_run)
     ## and print them
     print_count = print_emails()
+
     ## send a message to telegram if it's turned on.
     msg = f"Checked {fetch_count} emails, found {new_count} new emails, printed {print_count} emails"
-    send_telegram_notification(msg)
     logger.info(msg)
+    if config.telegram_verbose_mode:
+        send_telegram_notification(msg)
 
 def validate_dependencies():
     """Checks for required system dependencies and exits if they are not found."""
