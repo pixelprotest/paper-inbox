@@ -28,12 +28,13 @@ logger = setup_logger('cli', logging.INFO, silent_logging=True)
 @click.option('--show-cron', is_flag=True, help='List the cron schedule.')
 @click.option('--open-config', is_flag=True, help='Open the configuration directory.')
 @click.option('--test', is_flag=True, help='Run tests.')
+@click.option('--version', is_flag=True, help='Show the version number')
 @click.pass_context
-def main(ctx, config, show_config, show_dirs, show_cron, open_config, test):
+def main(ctx, config, show_config, show_dirs, show_cron, open_config, test, version):
     """"""
     if ctx.invoked_subcommand is None:
         ## check if all passed command flags were False
-        all_cmds = [config, show_config, show_dirs, show_cron, open_config, test]
+        all_cmds = [config, show_config, show_dirs, show_cron, open_config, test, version]
         if all(not cmd for cmd in all_cmds):
             run_app()
             return
@@ -50,6 +51,10 @@ def main(ctx, config, show_config, show_dirs, show_cron, open_config, test):
             open_config_dir(console)
         elif test:
             run_tests()
+        elif version:
+            from importlib.metadata import version
+            app_version = version('paper-inbox') 
+            console.print(f"Paper Inbox version: [bold {GREEN}]{app_version}[/bold {GREEN}]")
         else:
             console.print("[bold red]Error:[/] No valid command flags passed. Please use --config, --show-config, --show-dirs, or --show-cron.")
 
